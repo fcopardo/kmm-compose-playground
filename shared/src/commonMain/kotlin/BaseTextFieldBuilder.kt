@@ -32,10 +32,7 @@ class BasicTextFieldBuilder(id: String) : composable<BasicTextFieldBuilder>(id) 
     private var minLines: Int = 1
     private var visualTransformation: VisualTransformation = VisualTransformation.None
     private var onTextLayout: (TextLayoutResult) -> Unit = {}
-    private var interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
     private var cursorBrush: Brush = SolidColor(Color.Black)
-    private var decorationBox: @Composable (innerTextField: @Composable () -> Unit) -> Unit =
-    private var @Composable { innerTextField -> innerTextField() }
 
     fun value(value : TextFieldValue): BasicTextFieldBuilder {
         this.value = value
@@ -72,8 +69,49 @@ class BasicTextFieldBuilder(id: String) : composable<BasicTextFieldBuilder>(id) 
         return this
     }
 
+    fun minLines(lines : Int): BasicTextFieldBuilder {
+        this.minLines = lines
+        return this
+    }
+
+    fun maxLines(lines : Int): BasicTextFieldBuilder {
+        this.maxLines = lines
+        return this
+    }
+
+    fun visualTransformation(visualTransformation: VisualTransformation): BasicTextFieldBuilder {
+        this.visualTransformation = visualTransformation
+        return this
+    }
+
+    fun onTextLayout(onTextLayout: (TextLayoutResult) -> Unit): BasicTextFieldBuilder {
+        this.onTextLayout = onTextLayout
+        return this
+    }
+
+    fun cursorBrush(cursorBrush: Brush): BasicTextFieldBuilder {
+        this.cursorBrush = cursorBrush
+        return this
+    }
+
     @Composable
     override fun compose() {
-        BasicTextField()
+        BasicTextField(
+            value!!, onValueChange, modifier, enabled, readOnly, textStyle, keyboardOptions, keyboardActions, singleLine, maxLines, minLines,
+            visualTransformation, onTextLayout, remember { MutableInteractionSource() }, cursorBrush, {})
+        dispose(id)
     }
+
+    @Composable
+    fun compose(interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }, decorationBox: @Composable (innerTextField: @Composable () -> Unit) -> Unit =
+        @Composable { innerTextField -> innerTextField() }) {
+
+        BasicTextField(
+            value!!, onValueChange, modifier, enabled, readOnly, textStyle, keyboardOptions, keyboardActions, singleLine, maxLines, minLines,
+            visualTransformation, onTextLayout, interactionSource, cursorBrush, decorationBox)
+        dispose(id)
+
+    }
+
+
 }
