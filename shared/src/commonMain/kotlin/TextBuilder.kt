@@ -1,7 +1,6 @@
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -13,10 +12,15 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 
-class TextBuilder {
+class TextBuilder : composable<TextBuilder> {
+
+    companion object : BuilderCompanion<TextBuilder>() {
+        override fun createBuilder(id: String): TextBuilder {
+            return TextBuilder(id)
+        }
+    }
 
     private var text: String = ""
-    private var modifier: Modifier = Modifier
     private var color: Color = Color.Unspecified
     private var fontSize: TextUnit = TextUnit.Unspecified
     private var fontStyle: FontStyle? = null
@@ -32,8 +36,11 @@ class TextBuilder {
     private var minLines: Int = 1
     private var onTextLayout: (TextLayoutResult) -> Unit = {}
 
-    constructor(textChain : String){
-        text = textChain
+    private constructor(id : String) : super(id)
+
+    fun text(text : String) : TextBuilder {
+        this.text = text
+        return this
     }
 
     fun color(newColor : Color): TextBuilder {
@@ -101,9 +108,17 @@ class TextBuilder {
     }
 
     @Composable
-    fun compose(style : TextStyle? = LocalTextStyle.current){
-        Text(text, modifier, color, fontSize, fontStyle, fontWeight, fontFamily, letterSpacing, textDecoration, textAlign, lineHeight, overflow, softWrap, maxLines, minLines, onTextLayout, style!!)
+    fun compose(style : TextStyle? = LocalTextStyle.current, recycle: Boolean? = false){
+        Text(text, modifier, color, fontSize, fontStyle, fontWeight, fontFamily,
+            letterSpacing, textDecoration, textAlign, lineHeight, overflow, softWrap,
+            maxLines, minLines, onTextLayout, style!!)
+        if(!recycle!!) dispose(id)
     }
 
-
+    @Composable override fun compose() {
+        Text(text, modifier, color, fontSize, fontStyle, fontWeight, fontFamily,
+            letterSpacing, textDecoration, textAlign, lineHeight, overflow, softWrap,
+            maxLines, minLines, onTextLayout, LocalTextStyle.current)
+        dispose(id)
+    }
 }

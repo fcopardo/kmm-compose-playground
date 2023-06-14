@@ -9,24 +9,23 @@ import androidx.compose.material.ButtonElevation
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 
-class ButtonBuilder {
+class ButtonBuilder(id: String) : composable<ButtonBuilder>(id){
+
+    companion object : BuilderCompanion<ButtonBuilder>() {
+        override fun createBuilder(id: String): ButtonBuilder {
+            return ButtonBuilder(id)
+        }
+    }
 
     private var onClick: () -> Unit = {}
-    private var modifier: Modifier = Modifier
     private var enabled: Boolean = true
     private var border: BorderStroke? = null
     private var contentPadding: PaddingValues = ButtonDefaults.ContentPadding
 
     fun onClick(onClick: () -> Unit): ButtonBuilder {
         this.onClick = onClick
-        return this
-    }
-
-    fun modifier(modifier: Modifier): ButtonBuilder {
-        this.modifier = modifier
         return this
     }
 
@@ -52,6 +51,27 @@ class ButtonBuilder {
         colors: ButtonColors? = ButtonDefaults.buttonColors(),
         content: @Composable RowScope.() -> Unit,
     ){
-        Button(onClick, modifier, enabled, interactionSource!!, elevation!!, shape!!, border, colors!!, contentPadding, content)
+        Button(onClick, modifier, enabled, interactionSource!!, elevation!!, shape!!,
+            border, colors!!, contentPadding, content)
+        dispose(id)
+    }
+
+    @Composable
+    fun compose(
+        content: @Composable RowScope.() -> Unit
+    ){
+        Button(onClick, modifier, enabled, remember { MutableInteractionSource() },
+            ButtonDefaults.elevation(), MaterialTheme.shapes.small, border,
+            ButtonDefaults.buttonColors(), contentPadding, content)
+        dispose(id)
+    }
+
+    @Composable
+    override fun compose() {
+        Button(onClick, modifier, enabled, remember { MutableInteractionSource() },
+            ButtonDefaults.elevation(), MaterialTheme.shapes.small, border,
+            ButtonDefaults.buttonColors(), contentPadding
+        ) {}
+        dispose(id)
     }
 }
