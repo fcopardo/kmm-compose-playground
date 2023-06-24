@@ -34,6 +34,20 @@ fun App() {
         var greetingText by remember { mutableStateOf("Hello, World!") }
         var showImage by remember { mutableStateOf(false) }
 
+        TextBuilder.get("main")
+            .text(greetingText)
+            .modifier(Modifier.onKeyEvent { event->
+                println("event type is "+event.toString())
+                false
+            })
+            .color(Color.Red)
+            .fontFamily(FontFamily.Serif)
+            .fontStyle(FontStyle.Italic)
+            .fontSize(TextUnit(15f, TextUnitType.Sp))
+            .letterSpacing(TextUnit(10f, TextUnitType.Sp))
+            .textAlign(TextAlign.Right)
+            .overflow(TextOverflow.Ellipsis)
+
         ColumnBuilder.get("main")
             .modifier(Modifier.fillMaxWidth())
             .horizontalAlignment(Alignment.CenterHorizontally)
@@ -43,18 +57,6 @@ fun App() {
                         showImage = !showImage }
                     .compose {
                         TextBuilder.get("main")
-                            .text(greetingText)
-                            .modifier(Modifier.onKeyEvent { event->
-                                println("event type is "+event.toString())
-                                false
-                            })
-                            .color(Color.Red)
-                            .fontFamily(FontFamily.Serif)
-                            .fontStyle(FontStyle.Italic)
-                            .fontSize(TextUnit(15f, TextUnitType.Sp))
-                            .letterSpacing(TextUnit(10f, TextUnitType.Sp))
-                            .textAlign(TextAlign.Right)
-                            .overflow(TextOverflow.Ellipsis)
                             .compose()
                     }
                 AnimatedVisibility(showImage) {

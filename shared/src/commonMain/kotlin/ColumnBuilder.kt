@@ -5,39 +5,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-class ColumnBuilder {
+class ColumnBuilder(id: String) : composable<ColumnBuilder>(id) {
 
-    companion object{
-        private var activeBuilders = mutableMapOf<String, ColumnBuilder>()
-        fun get(id : String): ColumnBuilder {
-            if(activeBuilders.containsKey(id)) return activeBuilders[id]!!
-            var builder = ColumnBuilder(id)
-            activeBuilders[id] = builder
-            return builder
-        }
-
-        fun dispose(id : String){
-            activeBuilders.remove(id)
-        }
-
-        fun destroy(){
-            activeBuilders.clear()
+    companion object : BuilderCompanion<ColumnBuilder>() {
+        override fun createBuilder(id: String): ColumnBuilder {
+            return ColumnBuilder(id)
         }
     }
 
-    private var id = ""
-    private var modifier: Modifier = Modifier
     private var verticalArrangement: Arrangement.Vertical = Arrangement.Top
     private var horizontalAlignment: Alignment.Horizontal = Alignment.Start
-
-    private constructor(id: String){
-        this.id = id
-    }
-
-    fun modifier(modifier : Modifier) : ColumnBuilder {
-        this.modifier = modifier
-        return this
-    }
 
     fun verticalArrangement(verticalArrangement: Arrangement.Vertical): ColumnBuilder {
         this.verticalArrangement = verticalArrangement
@@ -54,5 +31,10 @@ class ColumnBuilder {
         Column(modifier, verticalArrangement, horizontalAlignment, content)
         dispose(id)
     }
-    
+
+    @Composable
+    override fun compose() {
+        Column(modifier, verticalArrangement, horizontalAlignment, {})
+    }
+
 }
